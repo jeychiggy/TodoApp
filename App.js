@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import { persistStore } from 'redux-persist';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+
+import {configureStore} from "@reduxjs/toolkit";
+import AppStack from "./src/navigation";
+import persistedReducer from './src/state/Reducers'
+
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: [thunk]
+})
+
+const persistor = persistStore(store)
+
+persistor.purge()
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <AppStack/>
+        </PersistGate>
+      </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
